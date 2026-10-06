@@ -1,0 +1,4 @@
+# Intentional regression: Y then X. Report size is still two bytes.
+05 01 09 04 a1 01
+15 81 25 7f 75 08 95 02
+09 31 09 30 81 02 c0

@@ -1,0 +1,18 @@
+name: Incorrect result or parser failure
+description: Report a reproducible contract or decoding problem
+body:
+  - type: textarea
+    attributes:
+      label: Expected and actual behavior
+      description: Include the version, command, platform and expected contract result.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Minimal synthetic input
+      description: Hex byte pairs are ideal. Do not include private captures or keystrokes. Use SECURITY.md for vulnerabilities.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Specification reference or existing parser comparison

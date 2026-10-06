@@ -1,0 +1,2 @@
+# Delimiter semantics are unsupported: compare must return an error, even to self.
+05 01 09 04 a1 01 a9 01

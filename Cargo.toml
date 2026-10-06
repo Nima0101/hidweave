@@ -1,0 +1,26 @@
+[package]
+name = "hidweave"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Compare HID report contracts and explain how the same bytes change meaning"
+license = "MIT"
+repository = "https://github.com/Nima0101/hidweave"
+keywords = ["hid", "usb", "firmware", "binary", "diff"]
+categories = ["command-line-utilities", "development-tools::testing", "parser-implementations"]
+include = ["src/**", "tests/**", "examples/**", "docs/**", "benches/**", "benchmarks/**", "scripts/*.py", "fuzz/README.md", "fuzz/Cargo.toml", "fuzz/Cargo.lock", "fuzz/fuzz_targets/**", "Cargo.toml", "Cargo.lock", "README.md", "LICENSE", "CHANGELOG.md", "SECURITY.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md"]
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[lints.clippy]
+all = "warn"
+
+[profile.release]
+overflow-checks = true
+strip = true
+
+[[bench]]
+name = "contracts"
+harness = false

@@ -1,0 +1,15 @@
+# Coverage-guided parser fuzzing
+
+The fuzz-only workspace uses libFuzzer and is not a production dependency.
+Install a nightly Rust toolchain and `cargo-fuzz`, then from the repository root:
+
+```sh
+python3 scripts/seed_fuzz.py
+cargo +nightly fuzz run descriptor -- -max_total_time=30 -max_len=65535 -rss_limit_mb=512
+```
+
+The target exercises binary and hex parsing, self-comparison, report construction,
+arbitrary report decoding, and contiguous field invariants. AddressSanitizer is
+enabled by cargo-fuzz. Keep minimized regressions in deterministic tests; do not
+commit private device captures. The generated corpus and artifacts are ignored.
+Long campaigns should use an external process budget and retain their logs.

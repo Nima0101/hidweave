@@ -1,0 +1,4 @@
+# Synthetic two-axis controller: X then Y, signed 8-bit values.
+05 01 09 04 a1 01
+15 81 25 7f 75 08 95 02
+09 30 09 31 81 02 c0
