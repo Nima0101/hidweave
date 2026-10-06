@@ -140,8 +140,10 @@ descriptor formats; [Waratah](https://github.com/microsoft/hidtools) and
 already offer Rust parsing. hidweave adds an explicit artifact-pair comparison
 contract and same-byte interpretation evidence; it complements those tools.
 
-Local verification currently covers macOS arm64. Linux and Windows CI are
-configured; support is only claimed after those checks pass.
+Builds, tests, lint, packaged-library use and CLI installation are verified on
+Ubuntu 24.04 x86_64, macOS 14 arm64 and Windows Server 2022 x86_64 in CI.
+Local verification also covers macOS 26.6.2 arm64. See [verification](docs/verification.md)
+for scope and limitations.
 
 Read the [architecture](docs/architecture.md), [design rationale](docs/design-rationale.md),
 [engineering deep dive](docs/engineering-deep-dive.md), [threat model](docs/threat-model.md),

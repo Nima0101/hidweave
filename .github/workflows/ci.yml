@@ -54,7 +54,14 @@ jobs:
         run: cargo test --locked --offline --target x86_64-unknown-linux-gnu --lib --tests
       - run: cargo install cargo-fuzz --version 0.13.2 --locked
       - run: python scripts/seed_fuzz.py
-      - run: cargo fuzz run descriptor -- -max_total_time=30 -max_len=65535 -rss_limit_mb=512
+      - run: cargo fuzz run descriptor -- -max_total_time=30 -max_len=65535 -rss_limit_mb=1024
+      - name: Retain failing fuzz inputs
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fuzz-failures
+          path: fuzz/artifacts/
+          if-no-files-found: ignore
   independent-oracle:
     runs-on: ubuntu-24.04
     steps:
