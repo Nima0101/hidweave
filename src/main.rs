@@ -7,7 +7,7 @@ use std::{
     process::ExitCode,
 };
 
-const HELP: &str = "hidweave 0.1.0 — compare HID report contracts\n\nUsage:\n  hidweave demo\n  hidweave inspect DESCRIPTOR [--hex] [--json]\n  hidweave compare OLD NEW [--hex] [--json] [--report REPORT --kind input|output|feature]\n  hidweave decode DESCRIPTOR REPORT --kind input|output|feature [--hex] [--json]\n\nInputs are raw binary unless --hex is set (then all inputs are whitespace-separated\nhex byte pairs with optional # comments). Report bytes include ID only if numbered.\nOffsets exclude the report-ID byte. No device access.\n\nExit: 0 equal/success; 1 contract changed; 2 input/unsupported/resource/report error.\nCompare evidence errors do not replace the descriptor comparison exit status.\n";
+const HELP: &str = "hidweave 0.1.0 — compare HID report contracts\n\nUsage:\n  hidweave demo\n  hidweave inspect DESCRIPTOR [--hex] [--json]\n  hidweave compare OLD NEW [--hex] [--json] [--report REPORT --kind input|output|feature]\n  hidweave gate OLD NEW [--hex] [--policy strict|add-reports]\n  hidweave decode DESCRIPTOR REPORT --kind input|output|feature [--hex] [--json]\n\nInputs are raw binary unless --hex is set (then all inputs are whitespace-separated\nhex byte pairs with optional # comments). Report bytes include ID only if numbered.\nOffsets exclude the report-ID byte. No device access.\n\nExit: 0 equal/success; 1 contract changed; 2 input/unsupported/resource/report error.\nCompare evidence errors do not replace the descriptor comparison exit status.\n";
 
 fn read(path: &str, hex: bool) -> Result<Vec<u8>, String> {
     let path = Path::new(path);
@@ -172,6 +172,7 @@ fn run(args: Vec<String>) -> Result<(u8, String), String> {
     let mut positional = Vec::new();
     let mut hex = false;
     let mut as_json = false;
+    let mut policy = None;
     let mut report = None;
     let mut kind = None;
     let mut i = 1;
@@ -179,6 +180,14 @@ fn run(args: Vec<String>) -> Result<(u8, String), String> {
         match args[i].as_str() {
             "--hex" if !hex => hex = true,
             "--json" if !as_json => as_json = true,
+            "--policy" if policy.is_none() && command == "gate" => {
+                i += 1;
+                policy = Some(match args.get(i).map(String::as_str) {
+                    Some("strict") => gate::Policy::Strict,
+                    Some("add-reports") => gate::Policy::AddReports,
+                    _ => return Err("--policy must be strict or add-reports".into()),
+                });
+            }
             "--report" if report.is_none() => {
                 i += 1;
                 report = Some(args.get(i).ok_or("--report needs a file")?.as_str());
@@ -201,6 +210,16 @@ fn run(args: Vec<String>) -> Result<(u8, String), String> {
     }
     let load = |path| read(path, hex).and_then(|b| parse(&b).map_err(|e| e.to_string()));
     match command {
+        "gate" if positional.len() == 2 && report.is_none() && kind.is_none() && !as_json => {
+            let policy = policy.unwrap_or(gate::Policy::Strict);
+            match load(positional[0]).and_then(|old| load(positional[1]).map(|new| (old, new))) {
+                Ok((old, new)) => {
+                    let (allowed, artifact) = gate::evaluate(&old, &new, policy);
+                    Ok((u8::from(!allowed), artifact + "\n"))
+                }
+                Err(message) => Ok((2, gate::invalid(policy, &message) + "\n")),
+            }
+        }
         "inspect" if positional.len() == 1 && report.is_none() && kind.is_none() => {
             let l = load(positional[0])?;
             if as_json {

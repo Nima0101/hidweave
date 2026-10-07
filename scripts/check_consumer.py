@@ -1,14 +1,29 @@
 """Build the packaged crate as an external consumer, not as a workspace member."""
 import json
+import shutil
 from pathlib import Path
 import subprocess
 import tempfile
 
 root = Path(__file__).resolve().parents[1]
-subprocess.run(["cargo", "package", "--locked", "--offline"], cwd=root, check=True)
+# Package an exact manifest-selected source snapshot so the pre-commit gate does
+# not require committing unchecked changes. The package build itself stays strict.
+source_snapshot = tempfile.TemporaryDirectory(prefix="hidweave-package-source-")
+source = Path(source_snapshot.name)
+listing = subprocess.check_output(["cargo", "package", "--list", "--locked", "--offline", "--allow-dirty"], cwd=root, text=True)
+for name in listing.splitlines():
+    if name in ("Cargo.toml.orig", ".cargo_vcs_info.json"):
+        continue
+    relative = Path(name)
+    if relative.is_absolute() or ".." in relative.parts or not (root / relative).is_file():
+        raise ValueError("invalid source inventory")
+    destination = source / relative
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(root / relative, destination)
+subprocess.run(["cargo", "package", "--locked", "--offline"], cwd=source, check=True)
 metadata = json.loads(subprocess.check_output(["cargo", "metadata", "--no-deps", "--format-version", "1"], cwd=root))
 version = metadata["packages"][0]["version"]
-package = root / "target" / "package" / f"hidweave-{version}"
+package = source / "target" / "package" / f"hidweave-{version}"
 with tempfile.TemporaryDirectory(prefix="hidweave-consumer-") as directory:
     consumer = Path(directory)
     (consumer / "src").mkdir()
@@ -23,4 +38,5 @@ with tempfile.TemporaryDirectory(prefix="hidweave-consumer-") as directory:
         'assert!(compare(&l,&l).is_empty());assert_eq!(decode(&l,ReportKind::Input,&[42]).unwrap()[0].value,42);}\n', encoding="utf-8"
     )
     subprocess.run(["cargo", "run", "--offline"], cwd=consumer, check=True)
+source_snapshot.cleanup()
 print("Packaged external library consumer passed")

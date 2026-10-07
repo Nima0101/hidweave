@@ -8,7 +8,7 @@ license = "MIT"
 repository = "https://github.com/Nima0101/hidweave"
 keywords = ["hid", "usb", "firmware", "binary", "diff"]
 categories = ["command-line-utilities", "development-tools::testing", "parser-implementations"]
-include = ["src/**", "tests/**", "examples/**", "docs/**", "benches/**", "benchmarks/**", "scripts/*.py", "fuzz/README.md", "fuzz/Cargo.toml", "fuzz/Cargo.lock", "fuzz/fuzz_targets/**", "Cargo.toml", "Cargo.lock", "README.md", "LICENSE", "CHANGELOG.md", "SECURITY.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md"]
+include = ["src/**", "integrations/**", "tests/**", "examples/**", "docs/**", "benches/**", "benchmarks/**", "scripts/*.py", "fuzz/README.md", "fuzz/Cargo.toml", "fuzz/Cargo.lock", "fuzz/fuzz_targets/**", "Cargo.toml", "Cargo.lock", "README.md", "LICENSE", "CHANGELOG.md", "SECURITY.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md"]
 
 [lints.rust]
 unsafe_code = "forbid"

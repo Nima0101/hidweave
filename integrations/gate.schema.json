@@ -1,0 +1,21 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema",
+ "$id":"https://github.com/Nima0101/hidweave/blob/main/integrations/gate.schema.json",
+ "title":"hidweave policy review artifact v1",
+ "type":"object","additionalProperties":false,
+ "required":["schema_version","contract_version","policy","status","error","findings"],
+ "properties":{
+  "schema_version":{"const":1},"contract_version":{"const":1},
+  "policy":{"enum":["strict","add-reports"]},"status":{"enum":["pass","deny","invalid"]},
+  "error":{"type":["null","string"]},
+  "findings":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["category","allowed","report_kind","report_id","properties"],"properties":{
+    "category":{"enum":["report_added","report_removed","report_length","field_added","field_removed","field_changed"]},
+    "allowed":{"type":"boolean"},"report_kind":{"enum":["input","output","feature"]},"report_id":{"type":"integer","minimum":0,"maximum":255},"properties":{"type":"array","items":{"type":"string"}}
+  }}}
+ },
+ "allOf":[
+  {"if":{"properties":{"status":{"const":"invalid"}}},"then":{"properties":{"error":{"type":"string"},"findings":{"maxItems":0}}},"else":{"properties":{"error":{"type":"null"}}}},
+  {"if":{"properties":{"status":{"const":"pass"}}},"then":{"properties":{"findings":{"items":{"properties":{"allowed":{"const":true}}}}}}},
+  {"if":{"properties":{"status":{"const":"deny"}}},"then":{"properties":{"findings":{"contains":{"properties":{"allowed":{"const":false}}}}}}}
+ ]
+}
