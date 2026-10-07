@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add `gate` with deterministic schema-v1 review JSON and explicit `strict`/`add-reports` policies. Existing HID normalization and comparison semantics remain unchanged.
+- Add an executable CI runner and composite GitHub Action, with positive and negative tests for equivalence, semantic changes, unsupported input, report additions/removals and stable output.
+- Verify packaging from an exact source snapshot so pre-commit gates can validate unpublished edits without bypassing Cargo's package build.
+
 ## 0.1.0 — 2026-10-07
 
 - Offline HID report-descriptor inspection and contract comparison.
