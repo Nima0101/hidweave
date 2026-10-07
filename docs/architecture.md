@@ -42,3 +42,9 @@ not provide a filesystem sandbox against concurrent hostile path replacement.
 The core source modules separate model, parsing, comparison, decoding, JSON and
 CLI. The versioned contract is independent of presentation and does not depend on
 an OS HID stack, vendor usage database or external executable.
+
+The additive `gate` presentation layer applies `strict` or `add-reports` policy
+to the existing comparator. It serializes a separately versioned review artifact.
+The Python CI runner persists that artifact and propagates its exit status; the
+parser and comparison model are unchanged. See the Git checkout's
+`integrations/README.md` for the schema and composite action.

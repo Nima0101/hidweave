@@ -43,3 +43,12 @@ or deliberately selected reports and review diagnostics before sharing. hidweave
 does not sanitize captures and does not claim to do so.
 
 Report vulnerabilities through [SECURITY.md](../SECURITY.md).
+
+## CI policy trust
+
+For `gate`, the baseline descriptor, selected policy, pinned tool revision and
+workflow are trusted inputs. Candidate-controlled baseline replacement can hide
+regressions; protect baseline and policy changes through code review. Allowed
+report additions remain findings. Unsupported inputs fail under every policy.
+The CI runner invokes a selected binary directly and writes only the explicitly
+chosen review artifact; it is not a sandbox for hostile filesystem namespaces.

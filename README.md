@@ -152,3 +152,12 @@ Read the [architecture](docs/architecture.md), [design rationale](docs/design-ra
 [verification](docs/verification.md), [benchmarks](benchmarks/README.md), and
 [contributing guide](CONTRIBUTING.md).
 Security reports: [SECURITY.md](SECURITY.md). License: [MIT](LICENSE).
+
+## Firmware CI policy gate
+
+`hidweave gate OLD NEW --policy strict` emits a versioned JSON review artifact.
+The optional `add-reports` policy permits whole new reports while denying changes
+to existing reports; unsupported descriptors fail under both policies. See the
+[CI integration](integrations/README.md) for the schema, executable runner and
+composite GitHub Action. The extension is separate from existing release evidence
+and does not establish host/device compatibility.

@@ -1,0 +1,39 @@
+name: hidweave contract gate
+description: Compare a trusted baseline and candidate with a pinned hidweave checkout.
+inputs:
+  baseline:
+    description: Baseline descriptor path
+    required: true
+  candidate:
+    description: Candidate descriptor path
+    required: true
+  artifact:
+    description: Review JSON output path
+    default: hidweave-review.json
+  policy:
+    description: strict or add-reports
+    default: strict
+  hex:
+    description: Whether descriptors contain hex text
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        ACTION_ROOT: ${{ github.action_path }}
+        BASELINE: ${{ inputs.baseline }}
+        CANDIDATE: ${{ inputs.candidate }}
+        ARTIFACT: ${{ inputs.artifact }}
+        POLICY: ${{ inputs.policy }}
+        HEX: ${{ inputs.hex }}
+      run: |
+        set -euo pipefail
+        cargo build --release --locked --offline --manifest-path "$ACTION_ROOT/../../Cargo.toml" --target-dir "$RUNNER_TEMP/hidweave-build"
+        options=()
+        case "$HEX" in
+          true) options+=(--hex) ;;
+          false) ;;
+          *) echo "hex must be true or false" >&2; exit 2 ;;
+        esac
+        python3 "$ACTION_ROOT/../ci_gate.py" "$RUNNER_TEMP/hidweave-build/release/hidweave" "$BASELINE" "$CANDIDATE" "$ARTIFACT" --policy "$POLICY" "${options[@]}"

@@ -1,0 +1,25 @@
+name: Firmware CI integration
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: integrations/scripts/verify-local.sh
+      - uses: ./integrations/action
+        with:
+          baseline: examples/axis-old.hex
+          candidate: examples/axis-equivalent.hex
+          artifact: review.json
+          hex: 'true'
+      - name: Check action artifact
+        run: python3 -c 'import json; d=json.load(open("review.json")); assert d["status"] == "pass" and d["findings"] == []'

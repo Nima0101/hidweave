@@ -10,6 +10,7 @@
 //! ```
 mod compare;
 mod decode;
+pub mod gate;
 pub mod json;
 mod model;
 mod parser;
