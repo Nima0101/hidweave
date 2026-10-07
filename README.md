@@ -23,6 +23,8 @@ The bundled example is synthetic. Real report-layout regressions happen:
 update that changed a joystick report and disrupted console use. That issue was
 fixed upstream; hidweave does not predict console compatibility.
 
+Created and maintained by [Nima Khaki](https://github.com/Nima0101).
+
 ## Five-minute quickstart
 
 For a [release binary](https://github.com/Nima0101/hidweave/releases), extract the
